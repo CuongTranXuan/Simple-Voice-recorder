@@ -12,19 +12,19 @@ def init_recorder():
     
 @app.route('/uploads', methods=['POST'])
 @cross_origin()
-def save_audio():
-    rawAudio = request.get_data()
-    if rawAudio:
-        audioFile = open('RecordedFile.wav', 'wb')
-        audioFile.write(rawAudio)
-        audioFile.close()
-        return speech_to_text()
-    else: return 'break'
+# def save_audio():
+#     rawAudio = request.get_data()
+#     if rawAudio:
+#         audioFile = open('RecordedFile.wav', 'wb')
+#         audioFile.write(rawAudio)
+#         audioFile.close()
+#         return speech_to_text()
+#     else: return 'break'
     
-def speech_to_text():
-    subprocess.run('python vosk.py', shell=True)
+# def speech_to_text():
+#     subprocess.run('python vosk.py', shell=True)
 
-    return 'transcript'
+#     return 'transcript'
     
 if __name__ == '__main__':
     app.run(debug=True, port=8100)

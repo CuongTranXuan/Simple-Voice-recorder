@@ -1,50 +1,529 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>MediaRecorder API - Sample</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="keywords" content="WebRTC getUserMedia MediaRecorder API">
-    <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <style>
-      button{
-        margin: 10px 5px;
-      }
-      li{
-        margin: 10px;
-      }
-      body{
-        width: 90%;
-        max-width: 960px;
-        margin: 0px auto;
-      }
-      #btns{
-        display: none;
-      }
-      h1{
-        margin: 100px;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Voice MediaRecorder</h1>
 
-    <div id='gUMArea'>
-      <div>
-      Record:
-        <input type="radio" name="media" value="audio" checked id='mediaVideo'>audio
-      </div>
-      <button class="btn btn-default"  id='gUMbtn'>Request Stream</button>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1"/>
+        <meta charSet="utf-8"/>
+        <link rel="icon" href="https://anno.financialdeepmind.com/static/assets/icons/vlogo.png"/>
+        <title>Hệ thống test nhận dạng</title>
+        <script type="text/javascript" src="static/js/data-demo.js"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="static/css/style.css"/>
+        <link rel="stylesheet" href="static/css/my-style.css"/>
+    
+        <style></style>
+    </head>
+    <body>
+    <div id="next">
+        <div>
+            <div class="page-container theme-null">
+                <header class="header" id="header">
+                    <div class="header-container">
+                        <div class="header-contain">
+                            <div class="header-logo">
+                                <a class="header-logo__link" href="#">
+                                    <img class="header-logo__image" src="static/theme-v3/images/logo.png" alt="FDM logo"/>
+                                </a>
+                            </div>
+    
+                            <div class="header-search hidden-mobile">
+                                <form class="search-form" id="searchForm">
+                                    <div role="combobox" aria-haspopup="listbox" aria-owns="react-autowhatever-1"
+                                         aria-expanded="false" class="react-autosuggest__container">
+                                        <input type="text"
+                                               value=""
+                                               autoComplete="off"
+                                               aria-autocomplete="list"
+                                               aria-controls="react-autowhatever-1"
+                                               class="search-form__input"
+                                               placeholder="Tìm kiếm ..."
+                                               autofocus=""/>
+    
+                                        <div id="react-autowhatever-1" role="listbox"
+                                             class="react-autosuggest__suggestions-container">
+                                        </div>
+                                    </div>
+                                    <span class="search-form__cancel hidden-desktop">Cancel</span>
+                                </form>
+                            </div>
+    
+                            <div class="toggle-search hidden-desktop" id="searchFormMobile"
+                                 style="border:1px solid white;width:100px;border-radius:30px;background-position:90%"></div>
+                            <div class="toggle-menu hidden-desktop"></div>
+                            <nav class="main-menu hidden-mobile">
+                                <li class="main-menu__item main-menu__item--active">
+                                    <a class="main-menu__link active" href="/">Speech To Text</a>
+                                </li>
+                                <li class="main-menu__item" id="ttptBox">
+                                    <a class="main-menu__link" href="#">Text To Speech</a>
+                                </li>
+    
+                                <li>
+                                    <label for="small-radius-switch">
+                                        <div class="react-switch"
+                                             style="position:relative;display:inline-block;text-align:left;opacity:1;direction:ltr;border-radius:12px;-webkit-transition:opacity 0.25s;-moz-transition:opacity 0.25s;transition:opacity 0.25s;touch-action:none;-webkit-tap-highlight-color:rgba(0, 0, 0, 0);-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none">
+                                            <div class="react-switch-bg"
+                                                 style="height:24px;width:50px;margin:0;position:relative;background:#545454;border-radius:12px;cursor:pointer;-webkit-transition:background 0.25s;-moz-transition:background 0.25s;transition:background 0.25s"></div>
+                                            <div class="react-switch-handle"
+                                                 style="height:20px;width:20px;background:#b5b5b5;display:inline-block;cursor:pointer;border-radius:50%;position:absolute;transform:translateX(28px);top:2px;outline:0;border:0;-webkit-transition:background-color 0.25s, transform 0.25s, box-shadow 0.15s;-moz-transition:background-color 0.25s, transform 0.25s, box-shadow 0.15s;transition:background-color 0.25s, transform 0.25s, box-shadow 0.15s"></div>
+                                            <input type="checkbox" role="switch" checked="" id="small-radius-switch"
+                                                   style="border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;
+                                                   padding:0;position:absolute;width:1px"/>
+                                        </div>
+                                    </label>
+                                </li>
+                            </nav>
+                        </div>
+                    </div>
+                </header>
+    
+                <div>
+                    <div class="main-container no-padding-top">
+                        <div class="container" style="position:relative">
+    
+                            <div class="market-box box-compute">
+                                <div class="market-box__top" style="padding-bottom: 3em;">
+                                    <h4 class="market-box__heading">Hệ Thống Nhận Dạng Tiếng Nói</h4>
+                                </div>
+                                <div class="market-box__content">
+                                    <div class="nav-tabs-container">
+    
+                                        <div class="centering-buttons" style="padding-bottom:2em;">
+    
+                                            <button type="button" class="btn btn-outline-primary d-none mr-2" id="clearText"
+                                                    onclick="removeText()" style="padding:1em 1.5em;" title="Xóa">
+                                                <i class="fas fa-eraser" style="color: white;"></i>
+                                            </button>
+    
+                                            <button type="button" class="btn btn-outline-success mr-2" id="start"
+                                                    onclick="start()" style="padding:1em 1.5em;" title="Bắt đầu">
+                                                <i class="fas fa-microphone-alt" style="color: white;"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success mr-2" id="nextText"
+                                                    onclick="getText()" style="padding:1em 1.5em;" title="Câu tiếp">
+                                                <i class="fas fa-angle-double-right" style="color: white;"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger d-none mr-2" id="stop"
+                                                    onclick="stop()" style="padding:1em 1.5em;" title="Dừng thu">
+                                                <i class="fas fa-eye-slash" style="color: white;"></i>
+                                            </button>
+                                            <span id="status" class="text-muted"></span>
+    
+                                            <div class="market-box__content d-flex" style="float:right;">
+                                                <span style="padding:1.5em 0.3em;">Model</span>
+                                                <div class="box-period__time">
+                                                    <select class="box-period__time-select" id="model_type">
+                                                        <option value="1" style="color:yellow !important;">KALDI-BASELINE</option>
+                                                        <option value="2" style="color:yellow !important;">KALDI-GENERAL-4GRAM</option>
+                                                        <option value="3" style="color:yellow !important;" disabled>
+                                                            KALDI-GENERAL-3GRAM
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+    
+                                        </div>
+    
+                                        <div class="" style="padding-bottom:2em;">
+                                            <span class="text-muted pb-3">
+                                                Câu mẫu:<br/><br/><span id="textDemo"></span>
+                                            </span>
+    
+                                        </div>
+    
+                                        <div class="tab-content">
+                                            <div class="tab-panel show" style="border:0;height:450px;width:100%">
+    
+                                                <table class="box-compute__table whitespace--nowrap">
+                                                    <thead>
+                                                    <tr>
+                                                        <th class="text-left">
+                                                            <span onclick="anlysticResult()" style="cursor:pointer">
+                                                                PHÂN TÍCH
+                                                            </span>
+                                                            <i class="fas fa-chart-line ml-2" style="color: white;"></i>
+                                                            <span class="ml-3 d-none" id="timeCounter" style="color:green;">
+                                                                <label id="minutes">00</label>:<label id="seconds">00</label>
+                                                            </span>
+                                                        </th>
+                                                        <th class="color--primary">
+                                                            ĐÁNH GIÁ
+                                                            <i class="fas fa-thumbs-up ml-2 mb-2" style="color: white;"></i>
+                                                            <i class="fas fa-thumbs-down ml-2 mb-2"
+                                                               style="color: white;"></i>
+                                                        </th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+    
+                                                <div class="" style="padding-top: 3em;">
+                                                    <span class="text-left" id="list" aria-disabled="true"></span>
+                                                    <span class="text-left" id="partial"></span>
+                                                </div>
+    
+                                            </div>
+    
+                                            <div class="row d-none" id="analytics" style="">
+                                                <div class="col-md-6"></div>
+                                                <div class="col-md-6">
+                                                    <table class="box-compute__table whitespace--nowrap">
+                                                        <thead>
+                                                        <tr style="border-bottom: solid 1px #585873;">
+                                                            <td class="text-left color--primary">Chỉ số</td>
+                                                            <td class="color--primary">Kết quả</td>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr>
+                                                            <td class="text-left">Độ chính xác so với câu mẫu :</td>
+                                                            <td id="score"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-left">Danh tính :</td>
+                                                            <td id="namePer"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-left">Giới tính :</td>
+                                                            <td id="gender"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-left">Vùng miền :</td>
+                                                            <td id="region"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-left">Cảm xúc :</td>
+                                                            <td id="emotion"></td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+    
+                                            <p style="margin-bottom:0;margin-top:1rem">
+                                                <em>* Bấm nút start để bắt đầu thu âm nhé ... !</em>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <!--                        <div class="market-boxs">-->
+                            <!--                            <div class="market-box box-compute">-->
+                            <!--                                <div class="market-box__top"><h4 class="market-box__heading">Market fundamental</h4>-->
+                            <!--                                </div>-->
+                            <!--                                <div class="market-box__content">-->
+                            <!--                                    <div class="nav-tabs-container">-->
+    
+                            <!--                                        <div class="tab-content">-->
+                            <!--                                            <div class="tab-panel show" style="border:0;height:450px;width:100%">-->
+                            <!--                                                <table class="box-compute__table whitespace&#45;&#45;nowrap">-->
+                            <!--                                                    <thead>-->
+                            <!--                                                    <tr>-->
+                            <!--                                                        <th class="text-left">Figure</th>-->
+                            <!--                                                        <th class="color&#45;&#45;primary">Current</th>-->
+                            <!--                                                        <th class="color&#45;&#45;primary">2020</th>-->
+                            <!--                                                    </tr>-->
+                            <!--                                                    </thead>-->
+                            <!--                                                    <tbody>-->
+                            <!--                                                    <tr>-->
+                            <!--                                                        <td class="text-left">P/E</td>-->
+                            <!--                                                        <td></td>-->
+                            <!--                                                        <td></td>-->
+                            <!--                                                    </tr>-->
+                            <!--                                                    <tr>-->
+                            <!--                                                        <td class="text-left">P/B</td>-->
+                            <!--                                                        <td></td>-->
+                            <!--                                                        <td></td>-->
+                            <!--                                                    </tr>-->
+                            <!--                                                    <tr>-->
+                            <!--                                                        <td class="text-left">P/S</td>-->
+                            <!--                                                        <td></td>-->
+                            <!--                                                        <td></td>-->
+                            <!--                                                    </tr>-->
+                            <!--                                                    <tr>-->
+                            <!--                                                        <td class="text-left">ROAA (%)</td>-->
+                            <!--                                                        <td></td>-->
+                            <!--                                                        <td></td>-->
+                            <!--                                                    </tr>-->
+                            <!--                                                    <tr>-->
+                            <!--                                                        <td class="text-left">ROAE (%)</td>-->
+                            <!--                                                        <td></td>-->
+                            <!--                                                        <td></td>-->
+                            <!--                                                    </tr>-->
+                            <!--                                                    <tr>-->
+                            <!--                                                        <td class="text-left" style="white-space:normal">Dividend-->
+                            <!--                                                            yield (%)-->
+                            <!--                                                        </td>-->
+                            <!--                                                        <td></td>-->
+                            <!--                                                        <td></td>-->
+                            <!--                                                    </tr>-->
+                            <!--                                                    <tr>-->
+                            <!--                                                        <td class="text-left" style="white-space:normal">Market cap-->
+                            <!--                                                            (VNDbn)-->
+                            <!--                                                        </td>-->
+                            <!--                                                        <td></td>-->
+                            <!--                                                        <td></td>-->
+                            <!--                                                    </tr>-->
+                            <!--                                                    </tbody>-->
+                            <!--                                                </table>-->
+                            <!--                                                <p style="margin-bottom:0;margin-top:1rem"><em>* &lt;!&ndash; &ndash;&gt; &lt;!&ndash; &ndash;&gt;-->
+                            <!--                                                    2020&lt;!&ndash; &ndash;&gt; &lt;!&ndash; &ndash;&gt;numbers are at end of the year.</em></p>-->
+                            <!--                                            </div>-->
+                            <!--                                        </div>-->
+                            <!--                                    </div>-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
+                            <!--                            <div class="market-boxs-list">-->
+                            <!--                                <div class="hidden-desktop" id="stockOfTheDayBoxMobile">-->
+                            <!--                                    <div class="market-box box-feature">-->
+                            <!--                                        <div class="market-box__top"><h4 class="market-box__heading"><a-->
+                            <!--                                                style="color:inherit;text-decoration:underline"-->
+                            <!--                                                href="chung-khoan-tieu-diem.html">Stocks of the day</a></h4>-->
+                            <!--                                            <div class="market-box__top-right"><a class="read-more"-->
+                            <!--                                                                                  href="chung-khoan-tieu-diem.html">More</a>-->
+                            <!--                                            </div>-->
+                            <!--                                        </div>-->
+                            <!--                                        <div class="market-box__content">-->
+                            <!--                                            <div class="box-feature__stocks"></div>-->
+                            <!--                                            <div class="box-feature__vote">-->
+                            <!--                                                <div class="box-feature__vote-title">Vote for market today</div>-->
+                            <!--                                                <div>-->
+                            <!--                                                    <div class="box-feature__vote-action">-->
+                            <!--                                                        <div class="box-feature__vote-up">Increase</div>-->
+                            <!--                                                        <div class="box-feature__vote-down">Decline</div>-->
+                            <!--                                                    </div>-->
+                            <!--                                                </div>-->
+                            <!--                                            </div>-->
+                            <!--                                        </div>-->
+                            <!--                                    </div>-->
+                            <!--                                </div>-->
+    
+                            <!--                                <div class="market-box box-compute">-->
+                            <!--                                    <div class="market-box__top"><h4 class="market-box__heading">Market fundamental</h4>-->
+                            <!--                                    </div>-->
+                            <!--                                    <div class="market-box__content">-->
+                            <!--                                        <div class="nav-tabs-container">-->
+    
+                            <!--                                            <div class="tab-content">-->
+                            <!--                                                <div class="tab-panel show" style="border:0;height:450px;width:100%">-->
+                            <!--                                                    <table class="box-compute__table whitespace&#45;&#45;nowrap">-->
+                            <!--                                                        <thead>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <th class="text-left">Figure</th>-->
+                            <!--                                                            <th class="color&#45;&#45;primary">Current</th>-->
+                            <!--                                                            <th class="color&#45;&#45;primary">2020</th>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        </thead>-->
+                            <!--                                                        <tbody>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <td class="text-left">P/E</td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <td class="text-left">P/B</td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <td class="text-left">P/S</td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <td class="text-left">ROAA (%)</td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <td class="text-left">ROAE (%)</td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <td class="text-left" style="white-space:normal">Dividend-->
+                            <!--                                                                yield (%)-->
+                            <!--                                                            </td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <td class="text-left" style="white-space:normal">Market cap-->
+                            <!--                                                                (VNDbn)-->
+                            <!--                                                            </td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        </tbody>-->
+                            <!--                                                    </table>-->
+                            <!--                                                    <p style="margin-bottom:0;margin-top:1rem"><em>* &lt;!&ndash; &ndash;&gt; &lt;!&ndash; &ndash;&gt;-->
+                            <!--                                                        2020&lt;!&ndash; &ndash;&gt; &lt;!&ndash; &ndash;&gt;numbers are at end of the year.</em></p>-->
+                            <!--                                                </div>-->
+                            <!--                                            </div>-->
+                            <!--                                        </div>-->
+                            <!--                                    </div>-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
+                            <!--                            <div class="market-boxs-list">-->
+                            <!--                                <div class="hidden-desktop" id="stockOfTheDayBoxMobile1">-->
+                            <!--                                    <div class="market-box box-feature">-->
+                            <!--                                        <div class="market-box__top"><h4 class="market-box__heading"><a-->
+                            <!--                                                style="color:inherit;text-decoration:underline"-->
+                            <!--                                                href="chung-khoan-tieu-diem.html">Stocks of the day</a></h4>-->
+                            <!--                                            <div class="market-box__top-right"><a class="read-more"-->
+                            <!--                                                                                  href="chung-khoan-tieu-diem.html">More</a>-->
+                            <!--                                            </div>-->
+                            <!--                                        </div>-->
+                            <!--                                        <div class="market-box__content">-->
+                            <!--                                            <div class="box-feature__stocks"></div>-->
+                            <!--                                            <div class="box-feature__vote">-->
+                            <!--                                                <div class="box-feature__vote-title">Vote for market today</div>-->
+                            <!--                                                <div>-->
+                            <!--                                                    <div class="box-feature__vote-action">-->
+                            <!--                                                        <div class="box-feature__vote-up">Increase</div>-->
+                            <!--                                                        <div class="box-feature__vote-down">Decline</div>-->
+                            <!--                                                    </div>-->
+                            <!--                                                </div>-->
+                            <!--                                            </div>-->
+                            <!--                                        </div>-->
+                            <!--                                    </div>-->
+                            <!--                                </div>-->
+    
+                            <!--                                <div class="market-box box-compute">-->
+                            <!--                                    <div class="market-box__top"><h4 class="market-box__heading">Market fundamental</h4>-->
+                            <!--                                    </div>-->
+                            <!--                                    <div class="market-box__content">-->
+                            <!--                                        <div class="nav-tabs-container">-->
+    
+                            <!--                                            <div class="tab-content">-->
+                            <!--                                                <div class="tab-panel show" style="border:0;height:450px;width:100%">-->
+                            <!--                                                    <table class="box-compute__table whitespace&#45;&#45;nowrap">-->
+                            <!--                                                        <thead>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <th class="text-left">Figure</th>-->
+                            <!--                                                            <th class="color&#45;&#45;primary">Current</th>-->
+                            <!--                                                            <th class="color&#45;&#45;primary">2020</th>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        </thead>-->
+                            <!--                                                        <tbody>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <td class="text-left">P/E</td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <td class="text-left">P/B</td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <td class="text-left">P/S</td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <td class="text-left">ROAA (%)</td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <td class="text-left">ROAE (%)</td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <td class="text-left" style="white-space:normal">Dividend-->
+                            <!--                                                                yield (%)-->
+                            <!--                                                            </td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        <tr>-->
+                            <!--                                                            <td class="text-left" style="white-space:normal">Market cap-->
+                            <!--                                                                (VNDbn)-->
+                            <!--                                                            </td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                            <td></td>-->
+                            <!--                                                        </tr>-->
+                            <!--                                                        </tbody>-->
+                            <!--                                                    </table>-->
+                            <!--                                                    <p style="margin-bottom:0;margin-top:1rem"><em>* &lt;!&ndash; &ndash;&gt; &lt;!&ndash; &ndash;&gt;-->
+                            <!--                                                        2020&lt;!&ndash; &ndash;&gt; &lt;!&ndash; &ndash;&gt;numbers are at end of the year.</em></p>-->
+                            <!--                                                </div>-->
+                            <!--                                            </div>-->
+                            <!--                                        </div>-->
+                            <!--                                    </div>-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
+    
+                            <!--                        </div>-->
+                        </div>
+                    </div>
+                </div>
+    
+                <!--            <footer class="footer footer-site">-->
+                <!--                <div class="container">-->
+                <!--                    <div class="footer-top">-->
+                <!--                        <a class="footer-logo" href="#">-->
+                <!--                        <img class="footer-logo__image"-->
+                <!--                             src="static/theme-v3/images/logo.png"-->
+                <!--                             alt="FDM logo"/></a>-->
+                <!--                        <div class="footer-info footer-company">-->
+                <!--                            <img class="footer-info__image"-->
+                <!--                                 src="https://static-01.vndirect.com.vn/dstock/theme-v3/images/icon-map.svg"-->
+                <!--                                 alt="address"/>-->
+                <!--                            <div class="footer-info__content">-->
+                <!--                                <div class="footer-info__title">VPS Securities Company</div>-->
+                <!--                                <div class="footer-info__text text-desc">65 Cảm Hội</div>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                        <div class="footer-info footer-phone">-->
+                <!--                            <img class="footer-info__image"-->
+                <!--                                 src="https://static-01.vndirect.com.vn/dstock/theme-v3/images/icon-phone.svg"-->
+                <!--                                 alt="address"/>-->
+                <!--                            <div class="footer-info__content">-->
+                <!--                                <div class="footer-info__title">Phone Number</div>-->
+                <!--                                <a class="footer-info__text text-desc" href="tel:1800 888 88">1900 5454 09</a></div>-->
+                <!--                        </div>-->
+                <!--                        <div class="footer-info footer-email">-->
+                <!--                            <img class="footer-info__image"-->
+                <!--                                 src="https://static-01.vndirect.com.vn/dstock/theme-v3/images/icon-email.svg"-->
+                <!--                                 alt="address"/>-->
+                <!--                            <div class="footer-info__content">-->
+                <!--                                <div class="footer-info__title">Email</div>-->
+                <!--                                <a class="footer-info__text text-desc" href="#">support@vps.com.vn</a>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                    <div class="footer-bottom">-->
+                <!--                        <div class="footer-bottom__text">The formulas are calculated based on VPS&#x27;s choice and-->
+                <!--                            perspective. It may not necessarily coinside with other sources of information.-->
+                <!--                        </div>-->
+                <!--                        <div class="footer-bottom__text">Data related to 3rd party&#x27;s supply and only for reference-->
+                <!--                            purpose.-->
+                <!--                        </div>-->
+                <!--                        <div class="footer-copyright">©Copyright VPS Securities Company</div>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+                <!--            </footer>-->
+    
+                <button id="backToTop"><i class="fa fa-arrow-up"></i></button>
+            </div>
+        </div>
     </div>
-    <div id='btns'>
-      <button  class="btn btn-default" id='start'>Start</button>
-      <button  class="btn btn-default" id='stop'>Stop</button>
-    </div>
-    <div>
-      <ul  class="list-unstyled" id='ul'></ul>
-    </div>
-    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="{{ url_for('static', filename = 'js/script.js') }}" type="text/javascript"></script>
-  </body>
-</html>
+    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="static/js/speech2text.js"></script>
+    <script type="text/javascript" src="static/js/scripts.js"></script>
+    
+    <script type="text/javascript">
+        window.onload = getText();
+    
+    </script>
+    
+    </body>
+    </html>
