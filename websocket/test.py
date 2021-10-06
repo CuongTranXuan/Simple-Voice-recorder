@@ -7,7 +7,7 @@ import base64
 
 async def run_test(uri):
     async with websockets.connect(uri) as websocket:
-        wf = open("RecordedFile.wav", "rb")
+        wf = open(sys.argv[1], "rb")
         while True:
             data = wf.read(8000)
             if len(data) == 0:

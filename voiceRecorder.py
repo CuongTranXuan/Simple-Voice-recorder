@@ -10,8 +10,8 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 def init_recorder():
     return render_template('index.html')
     
-@app.route('/uploads', methods=['POST'])
-@cross_origin()
+# @app.route('/uploads', methods=['POST'])
+# @cross_origin()
 # def save_audio():
 #     rawAudio = request.get_data()
 #     if rawAudio:
@@ -27,5 +27,5 @@ def init_recorder():
 #     return 'transcript'
     
 if __name__ == '__main__':
-    app.run(debug=True, port=8100)
+    app.run(debug=True, port=8100, host="0.0.0.0")
     # add host='0.0.0.0' if running on docker container

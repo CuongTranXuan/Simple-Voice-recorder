@@ -159,7 +159,7 @@ function start() {
         audio: true,
         video: false,
     };
-    ws = new WebSocket('ws://localhost:2700')
+    ws = new WebSocket("ws://localhost:2700")
     navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
         console.log('Đã mở kết nối');
         recorder = new MediaRecorder(stream)

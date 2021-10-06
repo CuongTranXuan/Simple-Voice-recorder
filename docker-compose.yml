@@ -1,0 +1,34 @@
+version: '3.7'
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: voice-recorder
+    deploy:
+      restart_policy:
+        condition: on-failure
+    working_dir: /voice_recorder
+    networks:
+      - vosk-network
+    ports:
+      - "8100:8100"
+  websocket:
+    build:
+      context: ./websocket
+      dockerfile: Dockerfile
+    container_name: vosk
+    volumes:
+      - $PWD/model:/vosk_websocket/model
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - vosk-network
+    ports:
+      - "2700:2700"
+
+
+networks:
+  vosk-network:
+    driver: bridge
