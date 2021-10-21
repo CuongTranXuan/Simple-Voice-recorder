@@ -125,6 +125,71 @@ function jsUcfirst(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+
+function downsampleBuffer(buffer, rate) {
+    if (rate == sampleRate) {
+        return buffer;
+    }
+    if (rate > sampleRate) {
+        throw "downsampling rate show be smaller than original sample rate";
+    }
+    var sampleRateRatio = sampleRate / rate;
+    var newLength = Math.round(buffer.length / sampleRateRatio);
+    var result = new Float32Array(newLength);
+    var offsetResult = 0;
+    var offsetBuffer = 0;
+    while (offsetResult < result.length) {
+        var nextOffsetBuffer = Math.round((offsetResult + 1) * sampleRateRatio);
+         // Use average value of skipped samples
+        var accum = 0, count = 0;
+        for (var i = offsetBuffer; i < nextOffsetBuffer && i < buffer.length; i++) {
+            accum += buffer[i];
+            count++;
+        }
+        result[offsetResult] = accum / count;
+        // Or you can simply get rid of the skipped samples:
+        // result[offsetResult] = buffer[nextOffsetBuffer];
+        offsetResult++;
+        offsetBuffer = nextOffsetBuffer;
+    }
+    return result;
+}
+function encodeWAV(samples) {
+    var buffer = new ArrayBuffer(44 + samples.length * 2);
+    var view = new DataView(buffer);
+
+    /* RIFF identifier */
+    writeString(view, 0, 'RIFF');
+    /* RIFF chunk length */
+    view.setUint32(4, 36 + samples.length * 2, true);
+    /* RIFF type */
+    writeString(view, 8, 'WAVE');
+    /* format chunk identifier */
+    writeString(view, 12, 'fmt ');
+    /* format chunk length */
+    view.setUint32(16, 16, true);
+    /* sample format (raw) */
+    view.setUint16(20, 1, true);
+    /* channel count */
+    view.setUint16(22, numChannels, true);
+    /* sample rate */
+    view.setUint32(24, sampleRate, true);
+    /* byte rate (sample rate * block align) */
+    view.setUint32(28, sampleRate * 4, true);
+    /* block align (channel count * bytes per sample) */
+    view.setUint16(32, numChannels * 2, true);
+    /* bits per sample */
+    view.setUint16(34, 16, true);
+    /* data chunk identifier */
+    writeString(view, 36, 'data');
+    /* data chunk length */
+    view.setUint32(40, samples.length * 2, true);
+
+    floatTo16BitPCM(view, 44, samples);
+
+    return view;
+}
+
 function performRecvText(result) {
     var ls = JSON.parse(result);
     var sentence = ''
@@ -155,15 +220,24 @@ function performRecvPartial(str) {
 function start() {
     btn_show_stop();
     statusField.innerText = 'Đang nhận dạng ...';
-    var constraints = {
-        audio: true,
-        video: false,
-    };
+    // var constraints = {
+    //     audio: true,
+    //     video: false,
+    // };
     ws = new WebSocket("ws://localhost:2700")
+    const constraints = {
+        audio: {
+            channelCount: 1,
+            sampleRate: 16000,
+            sampleSize: 16,
+            volume: 1
+        }
+    }
+    // var downsampledBuffer = downsampleBuffer(interleaved, targetRate);
     navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
         console.log('Đã mở kết nối');
         recorder = new MediaRecorder(stream)
-        recorder.start(1000)
+        recorder.start(2000)
         recorder.ondataavailable = (event) => {
             console.debug('Got blob data:', event.data);
             if (event.data && event.data.size > 0 && ws.readyState === WebSocket.OPEN) {
@@ -178,67 +252,6 @@ function start() {
         console.log(event.data)
         performRecvText(event.data)
     }
-    // var configuration = {iceServers: [
-    //                 {
-    //                     'urls': [
-    //                         'stun:stun.l.google.com:19302'
-    //                     ]
-    //                 }
-    //                     ]};
-    // var config = {
-    //     sdpSemantics: 'unified-plan'
-    // };
-
-    // pc = new RTCPeerConnection(configuration);
-
-    // var parameters = {};
-
-    // dc = pc.createDataChannel('chat', parameters);
-    // dc.onclose = function () {
-    //     clearInterval(dcInterval);
-    //     console.log('Đã đóng kết nối');
-    //     btn_show_start();
-    // };
-
-    // dc.onopen = function () {
-    //     console.log('Đã mở kết nối');
-    // };
-
-    // dc.onmessage = function (evt) {
-    //     if(evt.data !== undefined) {
-    //         getData =JSON.parse(evt.data);
-    //         if(getData.text !== undefined) {
-    //             performRecvText(getData.text, getData.result)
-    //         }
-    //         else if (getData.partial !== undefined) {
-    //             performRecvPartial(getData.partial)
-    //         }
-    //     }
-
-    //     statusField.innerText = 'Đang nhận dạng ...';
-    // };
-
-    // pc.oniceconnectionstatechange = function () {
-    //     if (pc.iceConnectionState == 'disconnected') {
-    //         console.log('Đã ngắt kết nối');
-    //         btn_show_start();
-    //     }
-    // }
-
-    // var constraints = {
-    //     audio: true,
-    //     video: false,
-    // };
-
-    // navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
-    //     stream.getTracks().forEach(function (track) {
-    //         pc.addTrack(track, stream);
-    //     });
-    //     return negotiate();
-    // }, function (err) {
-    //     console.log('không tìm thấy Micro , Hãy check lại thiết bị thu âm của bạn: ' + err);
-    //     btn_show_start();
-    // });
 }
 
 function stop() {

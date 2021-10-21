@@ -27,5 +27,5 @@ def init_recorder():
 #     return 'transcript'
     
 if __name__ == '__main__':
-    app.run(debug=True, port=8100, host="0.0.0.0")
+    app.run(debug=True, port=8100, host="localhost")
     # add host='0.0.0.0' if running on docker container
