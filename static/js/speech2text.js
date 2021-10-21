@@ -7,10 +7,10 @@ var statusField = document.getElementById('status');
 var clear_btn = document.getElementById('clearText');
 var analyticsVoice = document.getElementById('analytics');
 var timeCounter = document.getElementById('timeCounter');
-
+var context = undefined
 var ws = null
 var recorder = null
-
+const audioContext = new AudioContext({sampleRate: 16000})
 function countTime(){
     timeCounter.classList.remove('d-none');
     var sec = 0;
@@ -75,52 +75,6 @@ function btn_show_start() {
     clear_btn.classList.add('d-none');
 }
 
-function negotiate() {
-    return pc.createOffer().then(function (offer) {
-        return pc.setLocalDescription(offer);
-    }).then(function () {
-        return new Promise(function (resolve) {
-            if (pc.iceGatheringState === 'complete') {
-                resolve();
-            } else {
-                function checkState() {
-                    if (pc.iceGatheringState === 'complete') {
-                        pc.removeEventListener('icegatheringstatechange', checkState);
-                        resolve();
-                    }
-                }
-
-                pc.addEventListener('icegatheringstatechange', checkState);
-            }
-        });
-    }).then(function () {
-        var offer = pc.localDescription;
-        var timer = countTime();
-        var url = getModel();
-        console.log('server :', url);
-        return fetch(url, {
-            body: JSON.stringify({
-                sdp: offer.sdp,
-                type: offer.type,
-            }),
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'application/json'
-            },
-            cache: "no-cache",
-            method: 'POST',
-        });
-    }).then(function (response) {
-        return response.json();
-    }).then(function (answer) {
-//        console.log(answer.sdp);
-        return pc.setRemoteDescription(answer);
-    }).catch(function (e) {
-        console.log(e);
-        btn_show_start();
-    });
-}
-
 function jsUcfirst(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -154,42 +108,23 @@ function downsampleBuffer(buffer, rate) {
     }
     return result;
 }
-function encodeWAV(samples) {
-    var buffer = new ArrayBuffer(44 + samples.length * 2);
-    var view = new DataView(buffer);
-
-    /* RIFF identifier */
-    writeString(view, 0, 'RIFF');
-    /* RIFF chunk length */
-    view.setUint32(4, 36 + samples.length * 2, true);
-    /* RIFF type */
-    writeString(view, 8, 'WAVE');
-    /* format chunk identifier */
-    writeString(view, 12, 'fmt ');
-    /* format chunk length */
-    view.setUint32(16, 16, true);
-    /* sample format (raw) */
-    view.setUint16(20, 1, true);
-    /* channel count */
-    view.setUint16(22, numChannels, true);
-    /* sample rate */
-    view.setUint32(24, sampleRate, true);
-    /* byte rate (sample rate * block align) */
-    view.setUint32(28, sampleRate * 4, true);
-    /* block align (channel count * bytes per sample) */
-    view.setUint16(32, numChannels * 2, true);
-    /* bits per sample */
-    view.setUint16(34, 16, true);
-    /* data chunk identifier */
-    writeString(view, 36, 'data');
-    /* data chunk length */
-    view.setUint32(40, samples.length * 2, true);
-
-    floatTo16BitPCM(view, 44, samples);
-
-    return view;
+function writeString(view, offset, string) {
+    for (var i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+    }
 }
-
+function floatTo16BitPCM(output, offset, input) {
+    for (var i = 0; i < input.length; i++, offset += 2) {
+        var s = Math.max(-1, Math.min(1, input[i]));
+        output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    }
+}
+function makeUpload(){
+    let blob = new Blob(chunks, {type: "audio/wav" })
+    var httpRequest = new XMLHttpRequest();
+      httpRequest.open("POST", "http://localhost:8100/uploads", true);
+      httpRequest.send(blob);
+  }
 function performRecvText(result) {
     var ls = JSON.parse(result);
     var sentence = ''
@@ -216,10 +151,18 @@ function performRecvText(result) {
 function performRecvPartial(str) {
     document.getElementById('partial').innerText = str.toUpperCase()
 }
-
+function convertFloat32ToInt16(float32ArrayData) {
+    var l = float32ArrayData.length;
+    var int16ArrayData = new Int16Array(l);
+    while (l--) {
+      int16ArrayData[l] = Math.min(1, float32ArrayData[l]) * 0x7fff;
+    }
+    return int16ArrayData;
+  }
 function start() {
     btn_show_stop();
     statusField.innerText = 'Đang nhận dạng ...';
+    chunks = []
     // var constraints = {
     //     audio: true,
     //     video: false,
@@ -228,24 +171,30 @@ function start() {
     const constraints = {
         audio: {
             channelCount: 1,
-            sampleRate: 16000,
-            sampleSize: 16,
-            volume: 1
+            echoCancellation: false
         }
     }
     // var downsampledBuffer = downsampleBuffer(interleaved, targetRate);
     navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
         console.log('Đã mở kết nối');
-        recorder = new MediaRecorder(stream)
-        recorder.start(2000)
-        recorder.ondataavailable = (event) => {
-            console.debug('Got blob data:', event.data);
-            if (event.data && event.data.size > 0 && ws.readyState === WebSocket.OPEN) {
-              ws.send(event.data);
+        context = new (window.AudioContext || window.webkitAudioContext)({
+            sampleRate: 16000
+          });
+        input = context.createMediaStreamSource(stream);
+        processor = context.createScriptProcessor(4096, 1, 1);
+        processor.onaudioprocess = e => {
+            if (ws && ws.readyState === ws.OPEN) {
+                const buffer = e.inputBuffer.getChannelData(0);
+                const int16ArrayData = convertFloat32ToInt16(buffer);
+                // Gửi dữ liệu lên server
+                chunks.push(int16ArrayData.buffer);
+                ws.send(int16ArrayData.buffer);
             }
-          };
+        }
+        input.connect(processor)
+        processor.connect(context.destination)
     }, function (err) {
-        console.log('không tìm thấy Micro , Hãy check lại thiết bị thu âm của bạn: ' + err);
+        console.error('không tìm thấy Micro , Hãy check lại thiết bị thu âm của bạn: ' + err);
         btn_show_start();
     });
     ws.onmessage = (event) => {
@@ -257,10 +206,10 @@ function start() {
 function stop() {
     if (ws.readyState != WebSocket.CLOSED){
         ws.close(1000)
-        recorder.stop()
-        console.log(recorder.state)
+        // recorder.stop()
+        // console.log(recorder.state)
     }
+    makeUpload()
     console.log('Đã đóng kết nối');
     btn_show_start()
-
 }

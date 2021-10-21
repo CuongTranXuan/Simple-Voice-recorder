@@ -8,6 +8,11 @@ import pathlib
 import websockets
 import concurrent.futures
 import logging
+
+
+# import samplerate as sr 
+# import numpy as np 
+
 from vosk import Model, SpkModel, KaldiRecognizer
 
 def process_chunk(rec, message):
@@ -17,7 +22,10 @@ def process_chunk(rec, message):
         return rec.Result(), False
     else:
         return rec.PartialResult(), False
-
+# resampler = sr.Resampler(converter='sinc_best', channels=1)
+# input_rate = 48000
+# target_rate = 16000
+# ratio = target_rate / input_rate
 async def recognize(websocket, path):
     global model
     global spk_model
@@ -36,7 +44,7 @@ async def recognize(websocket, path):
     while True:
 
         message = await websocket.recv()
-
+        print(type(message))
         # Load configuration if provided
         if isinstance(message, str) and 'config' in message:
             jobj = json.loads(message)['config']
@@ -50,7 +58,10 @@ async def recognize(websocket, path):
             if 'max_alternatives' in jobj:
                 max_alternatives = int(jobj['max_alternatives'])
             continue
-
+        #downsampling the audio 
+        # data = np.frombuffer(message, dtype=np.int16)
+        # resampled = resampler.process(data, ratio)
+        # print(type(resampled))
         # Create the recognizer, word list is temporary disabled since not every model supports it
         if not rec:
             if phrase_list:

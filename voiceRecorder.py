@@ -10,16 +10,16 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 def init_recorder():
     return render_template('index.html')
     
-# @app.route('/uploads', methods=['POST'])
-# @cross_origin()
-# def save_audio():
-#     rawAudio = request.get_data()
-#     if rawAudio:
-#         audioFile = open('RecordedFile.wav', 'wb')
-#         audioFile.write(rawAudio)
-#         audioFile.close()
-#         return speech_to_text()
-#     else: return 'break'
+@app.route('/uploads', methods=['POST'])
+@cross_origin()
+def save_audio():
+    rawAudio = request.get_data()
+    if rawAudio:
+        audioFile = open('RecordedFile.wav', 'wb')
+        audioFile.write(rawAudio)
+        audioFile.close()
+        return "uploaded"
+    else: return 'break'
     
 # def speech_to_text():
 #     subprocess.run('python vosk.py', shell=True)
