@@ -122,6 +122,9 @@ function floatTo16BitPCM(output, offset, input) {
 function makeUpload(){
     let blob = new Blob(chunks, {type: "audio/wav" })
     var httpRequest = new XMLHttpRequest();
+    console.log(chunks)
+    var url = URL.createObjectURL(blob)
+    console.log(url )
       httpRequest.open("POST", "http://localhost:8100/uploads", true);
       httpRequest.send(blob);
   }
@@ -163,10 +166,6 @@ function start() {
     btn_show_stop();
     statusField.innerText = 'Đang nhận dạng ...';
     chunks = []
-    // var constraints = {
-    //     audio: true,
-    //     video: false,
-    // };
     ws = new WebSocket("ws://localhost:2700")
     const constraints = {
         audio: {
@@ -198,7 +197,6 @@ function start() {
         btn_show_start();
     });
     ws.onmessage = (event) => {
-        console.log(event.data)
         performRecvText(event.data)
     }
 }
